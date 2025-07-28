@@ -20,16 +20,27 @@
 #include <errno.h>
 
 
+typedef struct s_pos {
+    int x;
+    int y;
+} t_pos;
+
+typedef struct s_validation {
+	int found_exit;
+	int found_items;
+} t_validation;
+
 typedef	struct s_game
 {
 	mlx_t	*mlx;
 	char	**grid;
 	size_t	width;
 	size_t	height;
-	size_t	p_x;
-	size_t	p_y;
 	size_t	item;
+	size_t	exit;
 	char	**map;
 }	t_game ;
 
+
+int is_map_playable(t_game *game);
 #endif

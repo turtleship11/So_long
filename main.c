@@ -26,13 +26,25 @@ int	main(int ac, char **av)
 	game = init_map(av[1]);
 	copy_map_to_grid(&game);
 
-	if (!validate_map(game))
+	if (!validate_map(game) && !is_map_playable(&game))
 	{
+		write(2,"It's not playanle\n", 18);
 		free_map(game.map);
 		free_map(game.grid);
 		return (-1);
 	}
 
+	game.mlx = mlx_init(game.width * 64, game.height * 64, "so_long", false);
+	if (!game.mlx)
+	{
+		write(2, "Failed to initialize mlx\n", 25);
+		free_map(game.map);
+		free_map(game.grid);
+		return (-1);
+	}
+
+	load_textures(&game, &textures);
+	render_map(&game, &textures);
 	// 이후 게임 실행
 	// ...
 	
@@ -234,51 +246,6 @@ int	validate_map(t_game game)
 }
 
 
-// char	**read_map(char *av)
-// {
-// 	int	fd;
-// 	char **map;
-// 	char *line;
-// 	char *map_str;
-// 	char *temp;
-// 	int height;
-// 	int i;
-
-// 	fd = open(av, O_RDONLY);
-// 	if (fd == -1 || errno == EISDIR)
-// 	{
-// 		write(2, "Invalid map file\n", 17);
-// 		return (NULL);
-// 	}
-//     height = get_map_height(filename);
-//     if (height <= 0) 
-// 	{
-// 		write(2, "Map is empty\n", 13);
-// 		return (NULL);		
-// 	}
-// 	map->height = height;
-// 	map_str = ft_strdup("");
-// 	if (!map_str)
-// 	{
-// 		write(2,"strdup error\n", 13);
-// 		exit(-1);
-// 	}
-// 	while ((line = get_next_line(fd)))
-// 	{
-// 		temp = map_str;
-// 		map_str = ft_strjoin(map_str, line);
-// 		free(temp);
-// 		free(line);
-// 	}
-// 	close(fd);
-// 	map = ft_split(map_str, '\n');
-// 	free(map_str);
-// 	if (height > 0)
-// 		map->width = strlen(map[0]);
-// 	else
-// 		map->height = 0; 
-// 	return (map);
-// }
 
 // void	read_map(t_game *game, char *filename)
 // {

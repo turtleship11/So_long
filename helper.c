@@ -1,3 +1,5 @@
+#include "so_long.h"
+
 void	free_map(char **map)
 {
 	size_t i = 0;
@@ -12,8 +14,41 @@ void	free_map(char **map)
 	free(map);
 }
 
+void free_grid(char **grid)
+{
+	size_t i = 0;
+	while (grid[i])
+		free(grid[i++]);
+	free(grid);
+}
 
-#include <stdlib.h>
+int is_map_playable(t_game *game)
+{
+	t_validation check;
+	t_pos start;
+
+	char **temp_grid = copy_grid(game->grid, game->height);
+	if (!temp_grid)
+		return (0);
+
+	check = {0, 0};
+	start = find_player(temp_grid, game->height);
+	if (start.x == -1 || start.y == -1)
+	{
+		free_grid(temp_grid);
+		return (0);
+	}
+	dfs(temp_grid, start.x, start.y, &check);
+	free_grid(temp_grid);
+
+	// 모든 아이템에 도달했고 출구도 찾았는지 확인
+	if (check.found_items == game->item && check.found_exit)
+		return (1);
+	else
+		return (0);
+}
+
+
 
 void dfs(char **grid, int x, int y, t_validation *check)
 {
@@ -35,29 +70,32 @@ void dfs(char **grid, int x, int y, t_validation *check)
 
 char **copy_grid(char **src, size_t height)
 {
+	size_t i;
+
 	char **copy = malloc(sizeof(char *) * (height + 1));
 	if (!copy)
 		return NULL;
-	for (size_t i = 0; i < height; i++)
+	i = 0;
+	while (i < height)
+	{
 		copy[i] = ft_strdup(src[i]);
+		i++;
+	}
 	copy[height] = NULL;
 	return copy;
 }
 
-void free_grid(char **grid)
-{
-	size_t i = 0;
-	while (grid[i])
-		free(grid[i++]);
-	free(grid);
-}
 
 t_pos find_player(char **grid, size_t height)
 {
 	t_pos pos;
-	for (size_t y = 0; y < height; y++)
+	int y = 0;
+	int x;
+
+	while (y < height)
 	{
-		for (size_t x = 0; grid[y][x]; x++)
+		x = 0;
+		while (grid[y][x])
 		{
 			if (grid[y][x] == 'P')
 			{
@@ -65,33 +103,12 @@ t_pos find_player(char **grid, size_t height)
 				pos.y = y;
 				return pos;
 			}
+			x++;
 		}
+		y++;
 	}
 	pos.x = -1;
 	pos.y = -1;
-	return pos; // 못 찾은 경우
+	return pos; 
 }
 
-int is_map_playable(t_game *game)
-{
-	char **temp_grid = copy_grid(game->grid, game->height);
-	if (!temp_grid)
-		return (0);
-
-	t_validation check = {0, 0};
-	t_pos start = find_player(temp_grid, game->height);
-	if (start.x == -1 || start.y == -1)
-	{
-		free_grid(temp_grid);
-		return (0);
-	}
-
-	dfs(temp_grid, start.x, start.y, &check);
-	free_grid(temp_grid);
-
-	// 모든 아이템에 도달했고 출구도 찾았는지 확인
-	if (check.found_items == game->item_count && check.found_exit)
-		return (1);
-	else
-		return (0);
-}
