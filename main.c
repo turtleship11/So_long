@@ -10,13 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
-#include "so_long.h"
+#include "./include/so_long.h"
 
 
 int		main(int ac, char **av)
 {
-	if (av != 2)
+	if (ac != 2)
 	{
 		write(2, "Input error, put only map\n", 26);
 		return (-1);
@@ -24,46 +23,31 @@ int		main(int ac, char **av)
 	map_check(av[1]);
 	
 }
-char	**read_map(char *av)
-{
-	int	fd;
-	char **map;
-	char *line;
-	char *map_str;
-	char *temp;
 
-	fd = open(av, O_RDONLY);
-	if (fd == -1 || errno == EISDIR)
+int get_map_height(const char *filename)
+{
+    int fd = open(filename, O_RDONLY);
+    if (fd < 0)
 	{
-		write(2, "Invalid map file\n", 17);
-		return (NULL);
+		write(2, "Failed to open file\n", 20);		
+		return (0);
 	}
-	map_str = ft_strdup("");
-	if (!map_str)
-	{
-		write(2,"strdup error\n", 13);
-		exit(-1);
-	}
-	while ((line = get_next_line(fd)))
-	{
-		temp = map_str;
-		map_str = ft_strjoin(map_str, line);
-		free(temp);
-		free(line);
-	}
-	close(fd);
-	map = ft_split(map_str, '\n');
-	free(map_str);
-	return (map);
+	int height = 0;
+    char *line;
+    while ((line = get_next_line(fd)))
+    {
+        height++;
+        free(line);
+    }
+    close(fd);
+    return (height);
 }
 
 t_game	init_map(char *av)
 {
 	t_game	game;
-	char *temp;
-	char *map_str;
 
-	game.map = read_map(av);
+	read_map(&game, av);
 	if (!game.map)
 	{
 		write(2, "Map reading failed\n", 20);
@@ -94,81 +78,170 @@ int		map_check(char *av)
 }
 
 
-// #define WIDTH 512
-// #define HEIGHT 512
+char	*read_map_str(const char *filename)
+{
+	int		fd;
+	char	*line;
+	char	*temp;
+	char	*map_str;
 
-// static mlx_image_t* image;
+	fd = open(filename, O_RDONLY);
+	if (fd == -1 || errno == EISDIR)
+	{
+		write(2, "Invalid map file\n", 17);
+		exit(EXIT_FAILURE);
+	}
+	map_str = ft_strdup("");
+	if (!map_str)
+	{
+		write(2, "strdup error\n", 13);
+		close(fd);
+		exit(EXIT_FAILURE);
+	}
+	while ((line = get_next_line(fd)))
+	{
+		temp = map_str;
+		map_str = ft_strjoin(map_str, line);
+		free(temp);
+		free(line);
+	}
+	close(fd);
+	return (map_str);
+}
 
-// // -----------------------------------------------------------------------------
+void	read_map(t_game *game, char *filename)
+{
+	char	*map_str;
 
-// int32_t ft_pixel(int32_t r, int32_t g, int32_t b, int32_t a)
+	game->height = get_map_height(filename);
+	if (game->height <= 0)
+	{
+		write(2, "Map is empty\n", 13);
+		exit(EXIT_FAILURE);
+	}
+	map_str = read_map_str(filename);
+	game->map = ft_split(map_str, '\n');
+	free(map_str);
+	if (!game->map || !game->map[0])
+	{
+		write(2, "Map format invalid\n", 20);
+		exit(EXIT_FAILURE);
+	}
+	game->width = ft_strlen(game->map[0]);
+}
+void copy_map_to_grid(t_game *game)
+{
+    size_t i = 0;
+
+    game->grid = malloc(sizeof(char *) * (game->height + 1));
+    if (!game->grid)
+        exit(EXIT_FAILURE);
+
+    while (i < game->height)
+    {
+        game->grid[i] = ft_strdup(game->map[i]);
+        if (!game->grid[i])
+        {
+            while (i > 0)
+                free(game->grid[--i]);
+            free(game->grid);
+            exit(EXIT_FAILURE);
+        }
+        i++;
+    }
+    game->grid[i] = NULL;
+}
+
+
+// char	**read_map(char *av)
 // {
-//     return (r << 24 | g << 16 | b << 8 | a);
+// 	int	fd;
+// 	char **map;
+// 	char *line;
+// 	char *map_str;
+// 	char *temp;
+// 	int height;
+// 	int i;
+
+// 	fd = open(av, O_RDONLY);
+// 	if (fd == -1 || errno == EISDIR)
+// 	{
+// 		write(2, "Invalid map file\n", 17);
+// 		return (NULL);
+// 	}
+//     height = get_map_height(filename);
+//     if (height <= 0) 
+// 	{
+// 		write(2, "Map is empty\n", 13);
+// 		return (NULL);		
+// 	}
+// 	map->height = height;
+// 	map_str = ft_strdup("");
+// 	if (!map_str)
+// 	{
+// 		write(2,"strdup error\n", 13);
+// 		exit(-1);
+// 	}
+// 	while ((line = get_next_line(fd)))
+// 	{
+// 		temp = map_str;
+// 		map_str = ft_strjoin(map_str, line);
+// 		free(temp);
+// 		free(line);
+// 	}
+// 	close(fd);
+// 	map = ft_split(map_str, '\n');
+// 	free(map_str);
+// 	if (height > 0)
+// 		map->width = strlen(map[0]);
+// 	else
+// 		map->height = 0; 
+// 	return (map);
 // }
 
-// void ft_randomize(void* param)
+// void	read_map(t_game *game, char *filename)
 // {
-// 	(void)param;
-// 	for (uint32_t i = 0; i < image->width; ++i)
+// 	int		fd;
+// 	char	*line;
+// 	char	*temp;
+// 	char	*map_str;
+
+// 	fd = open(filename, O_RDONLY);
+// 	if (fd == -1 || errno == EISDIR)
 // 	{
-// 		for (uint32_t y = 0; y < image->height; ++y)
-// 		{
-// 			uint32_t color = ft_pixel(
-// 				rand() % 0xFF, // R
-// 				rand() % 0xFF, // G
-// 				rand() % 0xFF, // B
-// 				rand() % 0xFF  // A
-// 			);
-// 			mlx_put_pixel(image, i, y, color);
-// 		}
+// 		write(2, "Invalid map file\n", 17);
+// 		exit(EXIT_FAILURE);
 // 	}
-// }
-
-// void ft_hook(void* param)
-// {
-// 	mlx_t* mlx = param;
-
-// 	if (mlx_is_key_down(mlx, MLX_KEY_ESCAPE))
-// 		mlx_close_window(mlx);
-// 	if (mlx_is_key_down(mlx, MLX_KEY_UP))
-// 		image->instances[0].y -= 5;
-// 	if (mlx_is_key_down(mlx, MLX_KEY_DOWN))
-// 		image->instances[0].y += 5;
-// 	if (mlx_is_key_down(mlx, MLX_KEY_LEFT))
-// 		image->instances[0].x -= 5;
-// 	if (mlx_is_key_down(mlx, MLX_KEY_RIGHT))
-// 		image->instances[0].x += 5;
-// }
-
-// // -----------------------------------------------------------------------------
-
-// int32_t main(void)
-// {
-// 	mlx_t* mlx;
-
-// 	// Gotta error check this stuff
-// 	if (!(mlx = mlx_init(WIDTH, HEIGHT, "MLX42", true)))
+// 	game->height = get_map_height(filename);
+// 	if (game->height <= 0)
 // 	{
-// 		puts(mlx_strerror(mlx_errno));
-// 		return(EXIT_FAILURE);
+// 		write(2, "Map is empty\n", 13);
+// 		close(fd);
+// 		exit(EXIT_FAILURE);
 // 	}
-// 	if (!(image = mlx_new_image(mlx, 128, 128)))
+// 	map_str = ft_strdup("");
+// 	if (!map_str)
 // 	{
-// 		mlx_close_window(mlx);
-// 		puts(mlx_strerror(mlx_errno));
-// 		return(EXIT_FAILURE);
+// 		write(2, "strdup error\n", 13);
+// 		close(fd);
+// 		exit(EXIT_FAILURE);
 // 	}
-// 	if (mlx_image_to_window(mlx, image, 0, 0) == -1)
+// 	while ((line = get_next_line(fd)))
 // 	{
-// 		mlx_close_window(mlx);
-// 		puts(mlx_strerror(mlx_errno));
-// 		return(EXIT_FAILURE);
+// 		temp = map_str;
+// 		map_str = ft_strjoin(map_str, line);
+// 		free(temp);
+// 		free(line);
 // 	}
-	
-// 	mlx_loop_hook(mlx, ft_randomize, mlx);
-// 	mlx_loop_hook(mlx, ft_hook, mlx);
+// 	close(fd);
 
-// 	mlx_loop(mlx);
-// 	mlx_terminate(mlx);
-// 	return (EXIT_SUCCESS);
+// 	game->map = ft_split(map_str, '\n');
+// 	free(map_str);
+
+// 	if (!game->map || !game->map[0])
+// 	{
+// 		write(2, "Map format invalid\n", 20);
+// 		exit(EXIT_FAILURE);
+// 	}
+// 	game->width = ft_strlen(game->map[0]);
 // }

@@ -13,7 +13,7 @@
 #ifndef SO_LONG_H
 # define SO_LONG_H
 
-# include "../MLX42/include/MLX42/MLX42.h"
+# include "./MLX42/include/MLX42/MLX42.h"
 #include <fcntl.h>
 #include "../libft/libft.h"
 #include "../libft/get_next_line.h" //check before push
@@ -24,8 +24,8 @@ typedef	struct s_game
 {
 	mlx_t	*mlx;
 	char	**grid;
-	size_t	wid;
-	size_t	hei;
+	size_t	width;
+	size_t	height;
 	size_t	p_x;
 	size_t	p_y;
 	size_t	item;
