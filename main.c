@@ -13,16 +13,35 @@
 #include "./include/so_long.h"
 
 
-int		main(int ac, char **av)
+int	main(int ac, char **av)
 {
+	t_game game;
+
 	if (ac != 2)
 	{
 		write(2, "Input error, put only map\n", 26);
 		return (-1);
 	}
 	map_check(av[1]);
+	game = init_map(av[1]);
+	copy_map_to_grid(&game);
+
+	if (!validate_map(game))
+	{
+		free_map(game.map);
+		free_map(game.grid);
+		return (-1);
+	}
+
+	// 이후 게임 실행
+	// ...
 	
+	// 프로그램 종료 시 메모리 정리
+	free_map(game.map);
+	free_map(game.grid);
+	return (0);
 }
+
 
 int get_map_height(const char *filename)
 {
@@ -150,6 +169,68 @@ void copy_map_to_grid(t_game *game)
         i++;
     }
     game->grid[i] = NULL;
+}
+
+int	validate_map(t_game game)
+{
+	int		player = 0;
+	int		exit = 0;
+	int		item = 0;
+	size_t	i = 0;
+
+	while (i < game.height)
+	{
+		if ((int)ft_strlen(game.grid[i]) != (int)game.width)
+		{
+			write(2, "Error: Map is not rectangular\n", 30);
+			return (0);
+		}
+
+		size_t j = 0;
+		while (j < game.width)
+		{
+			char c = game.grid[i][j];
+
+			if (i == 0 || i == game.height - 1 || j == 0 || j == game.width - 1)
+			{
+				if (c != '1')
+				{
+					write(2, "Error: Map borders must be walls\n", 33);
+					return (0);
+				}
+			}
+
+			if (c == 'P')
+				player++;
+			else if (c == 'E')
+				exit++;
+			else if (c == 'C')
+				item++;
+			else if (c != '0' && c != '1')
+			{
+				write(2, "Error: Invalid character in map\n", 32);
+				return (0);
+			}
+			j++;
+		}
+		i++;
+	}
+	if (player != 1)
+	{
+		write(2, "Error: There must be exactly one player\n", 40);
+		return (0);
+	}
+	if (exit < 1)
+	{
+		write(2, "Error: There must be at least one exit\n", 39);
+		return (0);
+	}
+	if (item < 1)
+	{
+		write(2, "Error: There must be at least one collectible\n", 46);
+		return (0);
+	}
+	return (1);
 }
 
 
