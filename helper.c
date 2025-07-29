@@ -1,3 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   helper.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jaeklee <jaeklee@student.hive.fi>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/29 14:29:55 by jaeklee           #+#    #+#             */
+/*   Updated: 2025/07/29 14:59:06 by jaeklee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+
 #include "so_long.h"
 
 void	free_map(char **map)
@@ -31,7 +44,9 @@ int is_map_playable(t_game *game)
 	if (!temp_grid)
 		return (0);
 
-	check = {0, 0};
+	check.found_items = 0;
+	check.found_exit = 0;
+
 	start = find_player(temp_grid, game->height);
 	if (start.x == -1 || start.y == -1)
 	{
@@ -41,7 +56,6 @@ int is_map_playable(t_game *game)
 	dfs(temp_grid, start.x, start.y, &check);
 	free_grid(temp_grid);
 
-	// 모든 아이템에 도달했고 출구도 찾았는지 확인
 	if (check.found_items == game->item && check.found_exit)
 		return (1);
 	else
@@ -60,7 +74,7 @@ void dfs(char **grid, int x, int y, t_validation *check)
 	else if (grid[y][x] == 'C')
 		check->found_items++;
 
-	grid[y][x] = 'V'; // 방문 표시
+	grid[y][x] = 'V';
 
 	dfs(grid, x + 1, y, check);
 	dfs(grid, x - 1, y, check);
@@ -89,8 +103,8 @@ char **copy_grid(char **src, size_t height)
 t_pos find_player(char **grid, size_t height)
 {
 	t_pos pos;
-	int y = 0;
-	int x;
+	size_t y = 0;
+	size_t x;
 
 	while (y < height)
 	{

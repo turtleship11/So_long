@@ -4,7 +4,7 @@ CFLAGS = -Wall -Wextra -Werror -Iinclude -Ilibft/include -IMLX42/include
 
 NAME = so_long
 
-SRCS = main.c 
+SRCS = main.c 1_map.c 3_textures.c key.c helper.c add.c
 
 .SECONDARY: $(OBJS)
 
@@ -34,12 +34,10 @@ $(NAME): $(OBJS) $(MLX_LIB) $(LIBFT_LIB)
 
 clean:
 	rm -f $(OBJS)
-	$(MAKE) -C $(MLX_DIR) clean
 	$(MAKE) -C libft clean
 
 fclean: clean
 	rm -f $(NAME)
-	$(MAKE) -C $(MLX_DIR) fclean
 	$(MAKE) -C libft fclean
 
 re: fclean all

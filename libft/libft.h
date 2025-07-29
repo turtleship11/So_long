@@ -6,13 +6,14 @@
 /*   By: jaeklee <jaeklee@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 16:15:55 by jaeklee           #+#    #+#             */
-/*   Updated: 2025/04/23 17:43:54 by jaeklee          ###   ########.fr       */
+/*   Updated: 2025/07/29 15:03:27 by jaeklee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LIBFT_H
 # define LIBFT_H
 
+#include "get_next_line.h"
 # include <stdlib.h>
 
 int		ft_atoi(const char *str);
@@ -49,4 +50,6 @@ char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_strrchr(const char *s, int c);
 int		ft_tolower(int c);
 int		ft_toupper(int c);
+char	*get_next_line(int fd);
+
 #endif
