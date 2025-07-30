@@ -46,7 +46,10 @@ int	main(int ac, char **av)
 	load_textures(&textures);
 	create_images(&game, &textures);
 	render_map(&game);
-
+	mlx_key_hook(game.mlx, key_hook, &game);
+	mlx_close_hook(game.mlx, close_hook, &game);
+	mlx_loop(game.mlx);
+	
 	cleanup_images(&game);
 	cleanup_textures(&textures);
 	free_map(game.map);

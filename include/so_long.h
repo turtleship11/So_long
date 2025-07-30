@@ -73,6 +73,7 @@ void render_map(t_game *game);
 void cleanup_images(t_game *game);
 void cleanup_textures(t_textures *textures);
 t_pos find_player(char **grid, size_t height);
+void	move_player(t_game *game, int dx, int dy);
 void dfs(char **grid, int x, int y, t_validation *check);
 int	validate_map(t_game game);
 
