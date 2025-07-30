@@ -4,13 +4,12 @@ CFLAGS = -Wall -Wextra -Werror -Iinclude -Ilibft/include -IMLX42/include
 
 NAME = so_long
 
-SRCS = main.c 1_map.c 3_textures.c key.c helper.c add.c
+SRCS = main.c 1_map.c 3_textures.c 4_key.c helper.c 2_valid.c
 
-.SECONDARY: $(OBJS)
 
 OBJS = $(SRCS:.c=.o)
 
-
+.SECONDARY: $(OBJS)
 MLX_DIR = MLX42
 MLX_LIB = $(MLX_DIR)/build/libmlx42.a
 MLX_FLAGS = -I$(MLX_DIR)/include

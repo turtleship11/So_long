@@ -6,7 +6,7 @@
 /*   By: jaeklee <jaeklee@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 10:06:09 by jaeklee           #+#    #+#             */
-/*   Updated: 2025/05/15 10:58:48 by jaeklee          ###   ########.fr       */
+/*   Updated: 2025/07/30 18:01:28 by jaeklee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ static char	*find_newline(char *remember)
 	{
 		temp = ft_strdup(new_line + 1);
 		if (!temp)
-		{	
+		{
 			free(remember);
 			return (NULL);
 		}

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   add.c                                              :+:      :+:    :+:   */
+/*   2_valid.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jaeklee <jaeklee@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 15:09:01 by jaeklee           #+#    #+#             */
-/*   Updated: 2025/07/29 15:09:09 by jaeklee          ###   ########.fr       */
+/*   Updated: 2025/07/30 19:20:56 by jaeklee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,17 @@
 
 int	validate_map(t_game game)
 {
-	int		player = 0;
-	int		exit = 0;
-	int		item = 0;
-	size_t	i = 0;
+	int		player;
+	int		exit_g;
+	int		item;
+	size_t	i;
+	size_t	j;
+	char	c;
 
+	player = 0;
+	exit_g = 0;
+	item = 0;
+	i = 0;
 	while (i < game.height)
 	{
 		if ((int)ft_strlen(game.grid[i]) != (int)game.width)
@@ -26,12 +32,10 @@ int	validate_map(t_game game)
 			write(2, "Error: Map is not rectangular\n", 30);
 			return (0);
 		}
-
-		size_t j = 0;
+		j = 0;
 		while (j < game.width)
 		{
-			char c = game.grid[i][j];
-
+			c = game.grid[i][j];
 			if (i == 0 || i == game.height - 1 || j == 0 || j == game.width - 1)
 			{
 				if (c != '1')
@@ -40,11 +44,10 @@ int	validate_map(t_game game)
 					return (0);
 				}
 			}
-
 			if (c == 'P')
 				player++;
 			else if (c == 'E')
-				exit++;
+				exit_g++;
 			else if (c == 'C')
 				item++;
 			else if (c != '0' && c != '1')
@@ -59,24 +62,17 @@ int	validate_map(t_game game)
 	if (player != 1)
 	{
 		write(2, "Error: There must be exactly one player\n", 40);
-		return (0);
+    	exit(1); 
 	}
-	if (exit < 1)
+	if (exit_g < 1)
 	{
 		write(2, "Error: There must be at least one exit\n", 39);
-		return (0);
+    	exit(EXIT_FAILURE); 
 	}
 	if (item < 1)
 	{
 		write(2, "Error: There must be at least one collectible\n", 46);
-		return (0);
+    	exit(EXIT_FAILURE); 
 	}
 	return (1);
 }
-//맵 렌더링 (GML == MLX)
-//mlx_put_image_to_window를 사용해서 각 요소마다 이미지 지정해서 출력
-//1.ber 맵 파일을 읽고
-//2.2차원 배열로 저장
-//3.벽, 플레이어, 아이템, 출구 등 맵 구성 요소 확인
-//4.유효한 맵인지 검사
-//5.이후 GML (Game Map Loader X 없이 직접 그리기) 혹은 mlx로 그리기

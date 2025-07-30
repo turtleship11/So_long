@@ -6,19 +6,19 @@
 /*   By: jaeklee <jaeklee@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 14:29:55 by jaeklee           #+#    #+#             */
-/*   Updated: 2025/07/29 14:59:06 by jaeklee          ###   ########.fr       */
+/*   Updated: 2025/07/30 18:12:20 by jaeklee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "so_long.h"
 
 void	free_map(char **map)
 {
-	size_t i = 0;
+	size_t	i;
 
+	i = 0;
 	if (!map)
-		return;
+		return ;
 	while (map[i])
 	{
 		free(map[i]);
@@ -27,26 +27,27 @@ void	free_map(char **map)
 	free(map);
 }
 
-void free_grid(char **grid)
+void	free_grid(char **grid)
 {
-	size_t i = 0;
+	size_t	i;
+
+	i = 0;
 	while (grid[i])
 		free(grid[i++]);
 	free(grid);
 }
 
-int is_map_playable(t_game *game)
+int	is_map_playable(t_game *game)
 {
-	t_validation check;
-	t_pos start;
+	t_validation	check;
+	t_pos			start;
+	char			**temp_grid;
 
-	char **temp_grid = copy_grid(game->grid, game->height);
+	temp_grid = copy_grid(game->grid, game->height);
 	if (!temp_grid)
 		return (0);
-
 	check.found_items = 0;
 	check.found_exit = 0;
-
 	start = find_player(temp_grid, game->height);
 	if (start.x == -1 || start.y == -1)
 	{
@@ -55,40 +56,35 @@ int is_map_playable(t_game *game)
 	}
 	dfs(temp_grid, start.x, start.y, &check);
 	free_grid(temp_grid);
-
 	if (check.found_items == game->item && check.found_exit)
 		return (1);
 	else
 		return (0);
 }
 
-
-
-void dfs(char **grid, int x, int y, t_validation *check)
+void	dfs(char **grid, int x, int y, t_validation *check)
 {
-	if (grid[y][x] == '1' || grid[y][x] == 'V') // 벽이거나 방문한 곳
+	if (grid[y][x] == '1' || grid[y][x] == 'V')
 		return ;
-
 	if (grid[y][x] == 'E')
 		check->found_exit = 1;
 	else if (grid[y][x] == 'C')
 		check->found_items++;
-
 	grid[y][x] = 'V';
-
 	dfs(grid, x + 1, y, check);
 	dfs(grid, x - 1, y, check);
 	dfs(grid, x, y + 1, check);
 	dfs(grid, x, y - 1, check);
 }
 
-char **copy_grid(char **src, size_t height)
+char	**copy_grid(char **src, size_t height)
 {
-	size_t i;
+	size_t	i;
+	char	**copy;
 
-	char **copy = malloc(sizeof(char *) * (height + 1));
+	copy = malloc(sizeof(char *) * (height + 1));
 	if (!copy)
-		return NULL;
+		return (NULL);
 	i = 0;
 	while (i < height)
 	{
@@ -96,16 +92,16 @@ char **copy_grid(char **src, size_t height)
 		i++;
 	}
 	copy[height] = NULL;
-	return copy;
+	return (copy);
 }
 
-
-t_pos find_player(char **grid, size_t height)
+t_pos	find_player(char **grid, size_t height)
 {
-	t_pos pos;
-	size_t y = 0;
-	size_t x;
+	t_pos	pos;
+	size_t	y;
+	size_t	x;
 
+	y = 0;
 	while (y < height)
 	{
 		x = 0;
@@ -115,7 +111,7 @@ t_pos find_player(char **grid, size_t height)
 			{
 				pos.x = x;
 				pos.y = y;
-				return pos;
+				return (pos);
 			}
 			x++;
 		}
@@ -123,6 +119,5 @@ t_pos find_player(char **grid, size_t height)
 	}
 	pos.x = -1;
 	pos.y = -1;
-	return pos; 
+	return (pos);
 }
-

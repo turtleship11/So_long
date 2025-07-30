@@ -6,29 +6,29 @@
 /*   By: jaeklee <jaeklee@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 11:47:57 by jaeklee           #+#    #+#             */
-/*   Updated: 2025/07/29 14:38:24 by jaeklee          ###   ########.fr       */
+/*   Updated: 2025/07/30 16:56:38 by jaeklee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "so_long.h"
 
-int		map_check(char *av)
+int	map_check(char *av)
 {
-	int	len;
-	char *format;
-	
+	int		len;
+	char	*format;
+
 	format = ".ber";
 	len = 0;
 	len = ft_strlen(av);
 	if (len <= 4)
 	{
-		write(2,"file name error\n",16);
+		write(2, "file name error\n", 16);
 		exit(-1);
 	}
 	if (ft_strncmp(&av[len - 4], format, 4) != 0)
 	{
-		write(2,"file name error\n",16);
-		exit(-1);		
+		write(2, "file name error\n", 16);
+		exit(-1);
 	}
 	return (1);
 }
@@ -40,7 +40,7 @@ t_game	init_map(char *av)
 	if (!game.map)
 	{
 		write(2, "Map reading failed\n", 20);
-		exit(-1);	
+		exit(-1);
 	}
 	return (game);
 }
@@ -67,23 +67,26 @@ void	read_map(t_game *game, char *filename)
 	game->width = ft_strlen(game->map[0]);
 }
 
-int get_map_height(const char *filename)
+int	get_map_height(const char *filename)
 {
-    int fd = open(filename, O_RDONLY);
-    if (fd < 0)
+	int		fd;
+	int		height;
+	char	*line;
+
+	fd = open(filename, O_RDONLY);
+	if (fd < 0)
 	{
-		write(2, "Failed to open file\n", 20);		
+		write(2, "Failed to open file\n", 20);
 		return (0);
 	}
-	int height = 0;
-    char *line;
-    while ((line = get_next_line(fd)))
-    {
-        height++;
-        free(line);
-    }
-    close(fd);
-    return (height);
+	height = 0;
+	while ((line = get_next_line(fd)))
+	{
+		height++;
+		free(line);
+	}
+	close(fd);
+	return (height);
 }
 
 char	*read_map_str(const char *filename)
@@ -123,25 +126,25 @@ char	*read_map_str(const char *filename)
 	return (map_str);
 }
 
-void copy_map_to_grid(t_game *game)
+void	copy_map_to_grid(t_game *game)
 {
-    size_t i = 0;
+	size_t	i;
 
-    game->grid = malloc(sizeof(char *) * (game->height + 1));
-    if (!game->grid)
-        exit(EXIT_FAILURE);
-
-    while (i < game->height)
-    {
-        game->grid[i] = ft_strdup(game->map[i]);
-        if (!game->grid[i])
-        {
-            while (i > 0)
-                free(game->grid[--i]);
-            free(game->grid);
-            exit(EXIT_FAILURE);
-        }
-        i++;
-    }
-    game->grid[i] = NULL;
+	i = 0;
+	game->grid = malloc(sizeof(char *) * (game->height + 1));
+	if (!game->grid)
+		exit(EXIT_FAILURE);
+	while (i < game->height)
+	{
+		game->grid[i] = ft_strdup(game->map[i]);
+		if (!game->grid[i])
+		{
+			while (i > 0)
+				free(game->grid[--i]);
+			free(game->grid);
+			exit(EXIT_FAILURE);
+		}
+		i++;
+	}
+	game->grid[i] = NULL;
 }
