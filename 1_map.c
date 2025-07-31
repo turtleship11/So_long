@@ -6,7 +6,7 @@
 /*   By: jaeklee <jaeklee@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 11:47:57 by jaeklee           #+#    #+#             */
-/*   Updated: 2025/07/30 16:56:38 by jaeklee          ###   ########.fr       */
+/*   Updated: 2025/07/31 14:09:46 by jaeklee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,13 @@ int	map_check(char *av)
 	}
 	return (1);
 }
+
 t_game	init_map(char *av)
 {
 	t_game	game;
 
 	read_map(&game, av);
+	game.move_count = 0;
 	if (!game.map)
 	{
 		write(2, "Map reading failed\n", 20);
@@ -44,6 +46,7 @@ t_game	init_map(char *av)
 	}
 	return (game);
 }
+
 void	read_map(t_game *game, char *filename)
 {
 	char	*map_str;
@@ -80,50 +83,15 @@ int	get_map_height(const char *filename)
 		return (0);
 	}
 	height = 0;
-	while ((line = get_next_line(fd)))
+	line = get_next_line(fd);
+	while (line)
 	{
 		height++;
 		free(line);
+		line = get_next_line(fd);
 	}
 	close(fd);
 	return (height);
-}
-
-char	*read_map_str(const char *filename)
-{
-	int		fd;
-	char	*line;
-	char	*temp;
-	char	*map_str;
-
-	fd = open(filename, O_RDONLY);
-	if (fd == -1 || errno == EISDIR)
-	{
-		write(2, "Invalid map file\n", 17);
-		exit(EXIT_FAILURE);
-	}
-	map_str = ft_strdup("");
-	if (!map_str)
-	{
-		write(2, "strdup error\n", 13);
-		close(fd);
-		exit(EXIT_FAILURE);
-	}
-	while ((line = get_next_line(fd)))
-	{
-		temp = map_str;
-		map_str = ft_strjoin(map_str, line);
-		free(temp);
-		free(line);
-		if (!map_str)
-		{
-			write(2, "ft_strjoin error\n", 17);
-			close(fd);
-			exit(EXIT_FAILURE);
-		}
-	}
-	close(fd);
-	return (map_str);
 }
 
 void	copy_map_to_grid(t_game *game)

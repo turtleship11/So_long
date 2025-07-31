@@ -6,7 +6,7 @@
 /*   By: jaeklee <jaeklee@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 14:29:38 by jaeklee           #+#    #+#             */
-/*   Updated: 2025/07/30 19:17:46 by jaeklee          ###   ########.fr       */
+/*   Updated: 2025/07/31 18:23:55 by jaeklee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,48 +70,17 @@ void	render_map(t_game *game)
 		while (x < game->width)
 		{
 			tile = game->grid[y][x];
-			if (tile == '0' || tile != '1')
-				draw_tile(game, game->floor_img, x, y);
-			else if (tile == '1')
+			draw_tile(game, game->floor_img, x, y);
+			if (tile == '1')
 				draw_tile(game, game->wall_img, x, y);
-
-			if (tile == 'P')
-				draw_tile(game, game->player_img, x, y);
 			else if (tile == 'C')
 				draw_tile(game, game->item_img, x, y);
-			else if (tile == 'E')
+			if (game->map[y][x] == 'E')
 				draw_tile(game, game->exit_img, x, y);
-
+			if (tile == 'P')
+				draw_tile(game, game->player_img, x, y);
 			x++;
 		}
 		y++;
 	}
-}
-
-void	cleanup_images(t_game *game)
-{
-	if (game->wall_img)
-		mlx_delete_image(game->mlx, game->wall_img);
-	if (game->floor_img)
-		mlx_delete_image(game->mlx, game->floor_img);
-	if (game->player_img)
-		mlx_delete_image(game->mlx, game->player_img);
-	if (game->item_img)
-		mlx_delete_image(game->mlx, game->item_img);
-	if (game->exit_img)
-		mlx_delete_image(game->mlx, game->exit_img);
-}
-
-void	cleanup_textures(t_textures *textures)
-{
-	if (textures->wall)
-		mlx_delete_texture(textures->wall);
-	if (textures->floor)
-		mlx_delete_texture(textures->floor);
-	if (textures->player)
-		mlx_delete_texture(textures->player);
-	if (textures->item)
-		mlx_delete_texture(textures->item);
-	if (textures->exit_g)
-		mlx_delete_texture(textures->exit_g);
 }

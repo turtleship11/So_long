@@ -6,7 +6,7 @@
 /*   By: jaeklee <jaeklee@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:45:30 by jaeklee           #+#    #+#             */
-/*   Updated: 2025/07/30 19:19:06 by jaeklee          ###   ########.fr       */
+/*   Updated: 2025/07/31 18:34:51 by jaeklee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include "../MLX42/include/MLX42/MLX42.h"
 # include "../libft/get_next_line.h"
 # include "../libft/libft.h"
+# include "ft_printf.h"
 # include <errno.h>
 # include <fcntl.h>
 # include <stdlib.h>
@@ -24,6 +25,8 @@ typedef struct s_pos
 {
 	int				x;
 	int				y;
+	size_t			i;
+	size_t			j;
 }					t_pos;
 
 typedef struct s_validation
@@ -40,6 +43,7 @@ typedef struct s_game
 	size_t			height;
 	int				item;
 	int				exit_g;
+	int				player;
 	char			**map;
 	int				move_count;
 
@@ -58,6 +62,13 @@ typedef struct s_textures
 	mlx_texture_t	*item;
 	mlx_texture_t	*exit_g;
 }					t_textures;
+
+typedef struct s_counts
+{
+	int				player;
+	int				exit_g;
+	int				item;
+}					t_counts;
 
 int					is_map_playable(t_game *game);
 int					map_check(char *av);
@@ -82,4 +93,19 @@ int					validate_map(t_game game);
 void				key_hook(mlx_key_data_t keydata, void *param);
 void				close_hook(void *param);
 void				count_items(t_game *game);
+char				*read_map_str(const char *filename);
+char				*read_lines_into_str(int fd);
+void				exit_with_error(const char *msg, int fd);
+
+int					check_map_shape(t_game game);
+void				return_with_error(const char *msg);
+void				check_map_cell(char c, t_pos pos, t_game game,
+						t_counts *counts);
+int					check_map_contents(t_game game, t_counts *counts);
+void				check_map_elements(t_counts counts);
+void				handle_player_move(t_game *game, t_pos old_pos, int new_x,
+						int new_y);
+int					ft_printf(const char *str, ...);
+void				main2(t_game game);
+void				win_game(t_game *game);
 #endif

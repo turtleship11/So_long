@@ -6,12 +6,11 @@
 /*   By: jaeklee <jaeklee@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 11:48:04 by jaeklee           #+#    #+#             */
-/*   Updated: 2025/07/30 18:53:40 by jaeklee          ###   ########.fr       */
+/*   Updated: 2025/07/31 18:36:40 by jaeklee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "so_long.h"
-#include <stdio.h>
 
 void	close_hook(void *param)
 {
@@ -43,44 +42,77 @@ void	key_hook(mlx_key_data_t keydata, void *param)
 
 void	move_player(t_game *game, int dx, int dy)
 {
-	t_pos		pos;
-	int			new_x;
-	int			new_y;
-	char		next;
-	
+	t_pos	pos;
+	int		new_x;
+	int		new_y;
+	int		prev_count;
+
 	pos = find_player(game->grid, game->height);
 	new_x = pos.x + dx;
 	new_y = pos.y + dy;
+	prev_count = game->move_count;
+	handle_player_move(game, pos, new_x, new_y);
+	if (game->move_count > prev_count)
+	{
+		ft_printf("Moves: %d\n", game->move_count);
+		render_map(game);
+	}
+}
+
+void	handle_player_move(t_game *game, t_pos old_pos, int new_x, int new_y)
+{
+	char	next;
+
 	next = game->grid[new_y][new_x];
 	if (next == '1')
 		return ;
 	if (next == 'C')
 	{
 		game->item--;
-		game->map[new_y][new_x] = '0';
 		game->grid[new_y][new_x] = '0';
-		render_map(game);
 	}
+	if (game->map[old_pos.y][old_pos.x] == 'E')
+		game->grid[old_pos.y][old_pos.x] = 'E';
+	else
+		game->grid[old_pos.y][old_pos.x] = '0';
 	if (next == 'E')
 	{
 		if (game->item == 0)
-		{
-			write(1, "You win!\n", 9);
-			mlx_terminate(game->mlx);
-			exit(0);
-		}
-		return ;
+			win_game(game);
 	}
-	game->grid[pos.y][pos.x] = '0';
-	game->map[pos.y][pos.x] = '0';
 	game->grid[new_y][new_x] = 'P';
-	game->map[new_y][new_x] = 'P';
 	game->player_img->instances[0].x = new_x * 64;
 	game->player_img->instances[0].y = new_y * 64;
 	game->move_count++;
-	printf("Moves: %d\n", game->move_count); // Charnge
-	render_map(game);
 }
+// void	handle_player_move(t_game *game, t_pos old_pos, int new_x, int new_y)
+// {
+// 	char	next;
+
+// 	next = game->grid[new_y][new_x];
+// 	if (next == '1')
+// 		return ;
+// 	if (next == 'C')
+// 	{
+// 		game->item--;
+// 		game->grid[new_y][new_x] = '0';
+// 	}
+// 	if (next == 'E')
+// 	{
+// 		if (game->item == 0)
+// 		{
+// 			write(1, "You win!\n", 9);
+// 			mlx_terminate(game->mlx);
+// 			exit(0);
+// 		}
+// 		return ;
+// 	}
+// 	game->grid[old_pos.y][old_pos.x] = '0';
+// 	game->grid[new_y][new_x] = 'P';
+// 	game->player_img->instances[0].x = new_x * 64;
+// 	game->player_img->instances[0].y = new_y * 64;
+// 	game->move_count++;
+// }
 
 void	count_items(t_game *game)
 {

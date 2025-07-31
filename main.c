@@ -6,7 +6,7 @@
 /*   By: jaeklee <jaeklee@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:13:29 by jaeklee           #+#    #+#             */
-/*   Updated: 2025/07/30 19:01:09 by jaeklee          ###   ########.fr       */
+/*   Updated: 2025/07/31 17:57:26 by jaeklee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,23 +14,19 @@
 
 int	main(int ac, char **av)
 {
-	t_game		game;
-	t_textures	textures;
+	t_game	game;
 
 	if (ac != 2)
-	{
-		write(2, "Input error, put only map\n", 26);
-		return (-1);
-	}
+		return_with_error("Input error, put only map\n");
 	map_check(av[1]);
 	game = init_map(av[1]);
 	copy_map_to_grid(&game);
-	if (!validate_map(game) && is_map_playable(&game) != 0)
+	if (!validate_map(game) || !is_map_playable(&game))
 	{
-		write(2, "It's not playanle\n", 18);
+		write(2, "It's not playable\n", 18);
 		free_map(game.map);
 		free_map(game.grid);
-		return (-1);
+		exit(EXIT_FAILURE);
 	}
 	game.mlx = mlx_init(game.width * 64, game.height * 64, "so_long", false);
 	if (!game.mlx)
@@ -40,6 +36,14 @@ int	main(int ac, char **av)
 		free_map(game.grid);
 		return (-1);
 	}
+	main2(game);
+	return (0);
+}
+
+void	main2(t_game game)
+{
+	t_textures	textures;
+
 	load_textures(&textures);
 	create_images(&game, &textures);
 	render_map(&game);
@@ -51,5 +55,4 @@ int	main(int ac, char **av)
 	cleanup_textures(&textures);
 	free_map(game.map);
 	free_map(game.grid);
-	return (0);
 }
